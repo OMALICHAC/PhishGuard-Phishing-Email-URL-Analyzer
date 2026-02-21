@@ -23,7 +23,7 @@
 
 ## Table of Contents
 
-- [The Problem PhishGuard Solves](#the-problem-phishguard-solves)
+- [Why PhishGuard](#why-phishguard)
 - [What PhishGuard Actually Does](#what-phishguard-actually-does)
 - [Features at a Glance](#features-at-a-glance)
 - [Architecture and Workflow](#architecture-and-workflow)
@@ -44,7 +44,6 @@
 - [How Each Module Works](#how-each-module-works)
 - [Project Structure](#project-structure)
 - [Technologies Used](#technologies-used)
-- [Sample HTML Reports](#sample-html-reports)
 - [Skills Demonstrated](#skills-demonstrated)
 - [Legal and Ethical Disclaimer](#legal-and-ethical-disclaimer)
 - [Contributing](#contributing)
@@ -53,24 +52,15 @@
 
 ---
 
-## The Problem PhishGuard Solves
+## Why PhishGuard
 
-Phishing is not a theoretical problem. It is the most common way attackers gain initial access to organizations, and it has been for over a decade.
-
-> **Over 80% of reported security incidents start with a phishing email.**
-> — *Verizon 2024 Data Breach Investigations Report*
-
-Every day, millions of phishing emails land in inboxes. Some are obvious — badly written, full of typos, asking you to send Bitcoin. But many are sophisticated. They use domains that look almost identical to real ones (`paypa1.com` instead of `paypal.com`), they spoof legitimate sender addresses, and they create urgency ("Your account will be closed in 24 hours!") to bypass your judgment.
-
-The challenge for security professionals is being able to look at a URL or email and quickly determine: **is this legitimate, or is someone trying to steal my credentials?**
-
-PhishGuard automates that process. It performs the same analysis that a SOC analyst would do manually — checking headers, decomposing URLs, looking up domains in threat intelligence databases — and presents the results in plain language with a clear risk score.
+Phishing is still the #1 way attackers get in. I built PhishGuard to automate the analysis a security analyst would do manually — checking headers, decomposing URLs, looking up domains — and score the result 0-100 with plain-English explanations.
 
 ---
 
 ## What PhishGuard Actually Does
 
-When you give PhishGuard a URL or an email file, it does the following:
+Give it a URL or an `.eml` file and it checks:
 
 **For URLs**, it breaks the URL apart and examines each piece:
 - Is the domain an IP address instead of a real domain name?
@@ -149,8 +139,6 @@ Here is how data flows through PhishGuard from input to final report:
                         │  Text (plain)        │
                         └─────────────────────┘
 ```
-
-The design is modular on purpose. Each component does one thing, and they combine through the scoring engine. This means you can extend any piece independently — add new URL checks, plug in a different threat intelligence feed, or create a new report format — without touching the rest.
 
 ---
 
@@ -303,12 +291,6 @@ Each check that triggers adds a specific number of risk points. The points are s
  ─────────────────────────────────────────────────────────────
 ```
 
-### Why This Approach?
-
-A single indicator doesn't prove phishing. A missing HTTPS certificate could just be a misconfigured website. A URL shortener is often used legitimately. But when you see a URL that uses an IP address, has no HTTPS, contains the word "verify" in the path, AND the domain is flagged in a threat database — that combination paints a very clear picture.
-
-PhishGuard's scoring reflects this. Low-weight checks (like a long URL: +5 points) serve as supporting evidence, while high-weight checks (like being flagged in a threat database: +30 points) can push a score into the danger zone on their own.
-
 ---
 
 ## Full Walkthrough: Analyzing a Phishing URL
@@ -317,7 +299,7 @@ Let's walk through a real analysis so you can see exactly what PhishGuard does a
 
 We're going to analyze this URL: `http://paypa1.com/login/verify-account`
 
-At first glance, it might look like a PayPal login page. But look closer — that's `paypa1` with a **number one**, not `paypal` with a lowercase **L**. This is a classic **typosquatting** attack.
+At first glance, it might look like a PayPal login page. But look closer — that's `paypa1` with a **number one**, not `paypal` with a lowercase **L**. A classic **typosquatting** attack.
 
 ```bash
 $ python phishguard.py --url "http://paypa1.com/login/verify-account"
@@ -350,9 +332,7 @@ Here is the actual output:
       Category: Typosquatting | Risk: +20 pts
 ```
 
-**What this means:** PhishGuard detected that the domain `paypa1.com` is suspiciously similar to `paypal.com`. The attacker replaced the lowercase letter `l` with the number `1` — a swap that's almost invisible in many fonts. This technique is called **typosquatting**, and it's one of the oldest and most effective phishing tricks in the book. Attackers register these look-alike domains and set up fake login pages to harvest credentials.
-
-**Why this matters for security:** Typosquatting detection requires comparing domains against a database of known brands and checking for common character substitutions (l→1, o→0, etc.). This is exactly what SOC analysts train to spot.
+**What this means:** PhishGuard detected that the domain `paypa1.com` is suspiciously similar to `paypal.com`. The attacker replaced the lowercase letter `l` with the number `1` — a swap that's almost invisible in many fonts. Attackers register these look-alike domains and set up fake login pages to harvest credentials.
 
 ### Finding 2: No HTTPS (+10 points)
 
@@ -361,7 +341,7 @@ Here is the actual output:
       Category: Missing HTTPS | Risk: +10 pts
 ```
 
-**What this means:** The URL uses plain `http://` instead of `https://`. HTTPS encrypts the data between your browser and the server, which means without it, anything you type (including passwords) is sent in cleartext. Any legitimate login page — especially one claiming to be PayPal — would use HTTPS. Its absence here is another red flag.
+**What this means:** The URL uses plain `http://` instead of `https://`. HTTPS encrypts the data between your browser and the server, which means without it, anything you type (including passwords) is sent in cleartext. Any legitimate login page — especially one claiming to be PayPal — would use HTTPS.
 
 ### Finding 3: Suspicious Keywords in URL Path (+10 points)
 
@@ -370,7 +350,7 @@ Here is the actual output:
       Category: Suspicious Keywords | Risk: +10 pts
 ```
 
-**What this means:** The URL path (`/login/verify-account`) contains words strongly associated with credential harvesting. Phishing URLs are designed to look like login or verification pages because that's where victims are expected to type their usernames and passwords. Words like `login`, `verify`, `account`, `secure`, and `update` appear in phishing URLs far more often than in normal website navigation.
+**What this means:** The URL path (`/login/verify-account`) contains words strongly associated with credential harvesting. Phishing URLs are designed to look like login or verification pages because that's where victims are expected to type their usernames and passwords.
 
 ### Finding 4: Known Malicious Domain (+30 points)
 
@@ -379,11 +359,11 @@ Here is the actual output:
       Category: Threat Intelligence | Risk: +30 pts
 ```
 
-**What this means:** PhishGuard checked `paypa1.com` against its threat intelligence databases and found it listed as a **known phishing domain**. This is the strongest possible signal — this domain has already been reported, investigated, and confirmed as malicious. The +30 points reflect the severity of this finding.
+**What this means:** PhishGuard checked `paypa1.com` against its threat intelligence databases and found it listed as a **known phishing domain**. This is the strongest possible signal — this domain has already been reported, investigated, and confirmed as malicious.
 
 ### The Verdict
 
-Four findings, 70/100, VERY HIGH risk. The combination of typosquatting + no encryption + credential-harvesting keywords + a known malicious domain leaves no room for doubt. PhishGuard's recommendations reflect this:
+Four findings, 70/100, VERY HIGH risk. Typosquatting + no encryption + credential-harvesting keywords + a known malicious domain. PhishGuard's recommendations:
 
 ```
   Recommendations:
@@ -391,17 +371,13 @@ Four findings, 70/100, VERY HIGH risk. The combination of typosquatting + no enc
   * Report this immediately to your IT/Security team.
   * If you entered credentials, change ALL passwords immediately.
   * Enable multi-factor authentication on all your accounts.
-  * The domain appears to impersonate a legitimate website.
-    Always type URLs directly into your browser.
-  * This domain/URL has been flagged by threat intelligence
-    sources as known malicious.
 ```
 
 ---
 
 ## Full Walkthrough: Analyzing a Phishing Email
 
-Now let's analyze an email. The sample file `phishing_example_1.eml` simulates a classic bank account suspension scam — the kind that arrives claiming your account will be closed unless you "verify your identity" immediately.
+Now let's analyze an email. The sample file `phishing_example_1.eml` simulates a classic bank account suspension scam.
 
 ```bash
 $ python phishguard.py --email sample_emails/phishing_example_1.eml
@@ -428,7 +404,7 @@ $ python phishguard.py --email sample_emails/phishing_example_1.eml
       Category: Sender Mismatch | Risk: +25 pts
 ```
 
-**What happened here:** The email's "From" header says `security-alert@nationa1-bank.com`, but the "Reply-To" header points to `verify-account@secure-banking-login.com` — a completely different domain. This is a textbook spoofing technique: the attacker fakes the sender address to look like a bank, but sets the reply address to their own domain so they receive any responses. Most email clients only display the "From" name, so the victim never sees the mismatch unless they inspect the headers.
+**What happened here:** The "From" header says `security-alert@nationa1-bank.com`, but the "Reply-To" points to `verify-account@secure-banking-login.com`. The attacker fakes the sender to look like a bank but routes replies to their own domain.
 
 ### Finding 2: Urgency Language (+10 points)
 
@@ -438,7 +414,7 @@ $ python phishguard.py --email sample_emails/phishing_example_1.eml
       Category: Urgency Language | Risk: +10 pts
 ```
 
-**What happened here:** PhishGuard found five different urgency keywords in the email. Phishing relies heavily on creating panic — if the victim is afraid their account is about to be closed, they're less likely to stop and think "wait, is this email actually from my bank?" The words "urgent," "immediately," "act now," "within 24 hours," and "suspended" all serve this purpose.
+**What happened here:** Five urgency keywords in one email. Phishing relies on panic — if the victim fears their account is about to be closed, they skip the step of verifying the email is real.
 
 ### Finding 3: Threat Language (+10 points)
 
@@ -448,7 +424,7 @@ $ python phishguard.py --email sample_emails/phishing_example_1.eml
       Category: Threat Language | Risk: +10 pts
 ```
 
-**What happened here:** Beyond urgency, the email also uses **threats** — "unauthorized access," "legal action," "will be suspended." These phrases are designed to frighten the recipient into acting without verifying the email's legitimacy. Legitimate organizations don't threaten customers with legal action via automated emails.
+**What happened here:** Beyond urgency, the email uses explicit threats to frighten the recipient into acting. Legitimate organizations don't threaten customers with legal action via automated emails.
 
 ### Finding 4: Suspicious Embedded Link (+15 points)
 
@@ -458,7 +434,7 @@ $ python phishguard.py --email sample_emails/phishing_example_1.eml
       Category: Suspicious Link | Risk: +15 pts
 ```
 
-**What happened here:** PhishGuard extracted a link from the email body and ran it through the URL analyzer. That link scored 45/100 on its own (HIGH RISK) because it uses a raw IP address instead of a domain name and contains credential-harvesting keywords. Legitimate banks don't send you links that go to IP addresses.
+**What happened here:** The embedded link scored 45/100 on its own — a raw IP address with credential-harvesting keywords. Legitimate banks don't send you links that go to IP addresses.
 
 ### Finding 5: SPF Authentication Failed (+20 points)
 
@@ -467,7 +443,7 @@ $ python phishguard.py --email sample_emails/phishing_example_1.eml
       Category: Email Authentication | Risk: +20 pts
 ```
 
-**What happened here:** SPF (Sender Policy Framework) is a system that verifies whether a mail server is authorized to send email on behalf of a domain. The email's headers show `spf=fail`, which means the server that sent this email was **not authorized** by the claimed sender domain. In plain terms: whoever sent this email was pretending to be someone else.
+**What happened here:** SPF checks whether a mail server is authorized to send on behalf of a domain. `spf=fail` means whoever sent this email was pretending to be someone else.
 
 ### Finding 6: DKIM Authentication Failed (+20 points)
 
@@ -476,7 +452,7 @@ $ python phishguard.py --email sample_emails/phishing_example_1.eml
       Category: Email Authentication | Risk: +20 pts
 ```
 
-**What happened here:** DKIM (DomainKeys Identified Mail) uses digital signatures to prove an email hasn't been altered and genuinely comes from the claimed domain. A DKIM failure means either the email was modified in transit or the sender is forging the domain — both are serious red flags.
+**What happened here:** DKIM uses digital signatures to prove an email hasn't been altered. A failure means the email was modified in transit or the sender is forging the domain.
 
 ### Finding 7: Generic Greeting (+5 points)
 
@@ -485,7 +461,7 @@ $ python phishguard.py --email sample_emails/phishing_example_1.eml
       Category: Generic Greeting | Risk: +5 pts
 ```
 
-**What happened here:** The email opens with "Dear Valued Customer" instead of the recipient's actual name. Phishing emails are sent in bulk — the attacker doesn't know the victim's name, so they use generic greetings. Your real bank knows your name and will use it.
+**What happened here:** "Dear Valued Customer" instead of an actual name. Phishing emails are sent in bulk — the attacker doesn't know the victim's name.
 
 ### Finding 8: Mismatched Link Text (+25 points)
 
@@ -495,17 +471,17 @@ $ python phishguard.py --email sample_emails/phishing_example_1.eml
       Category: Mismatched Link | Risk: +25 pts
 ```
 
-**What happened here:** This is one of the most dangerous phishing techniques. The email displays the link text as `https://www.nationalbank.com/secure/verify` — which looks completely legitimate. But the actual HTML hyperlink behind that text points to `http://192.168.45.67/login/verify-account` — a raw IP address controlled by the attacker. If you hover over the link (or inspect the email source), you'd see the real destination. PhishGuard catches this automatically.
+**What happened here:** The link displays as `https://www.nationalbank.com/secure/verify` but actually points to `http://192.168.45.67/login/verify-account`. The email lies about where the link goes. PhishGuard catches this automatically.
 
 ### The Verdict
 
-Eight findings, 100/100, CRITICAL. This email hit nearly every phishing indicator in the book: spoofed sender, failed authentication, urgency, threats, a generic greeting, a disguised malicious link, and a link that lies about where it goes. This is a textbook phishing email, and PhishGuard identified it with 95% confidence.
+Eight findings, 100/100, CRITICAL. Spoofed sender, failed authentication, urgency, threats, a generic greeting, a disguised malicious link, and link text that lies about its destination. Textbook phishing, identified with 95% confidence.
 
 ---
 
 ## Full Walkthrough: Analyzing a Legitimate Email
 
-It's just as important that a detection tool **doesn't** flag legitimate emails. Here's what happens when PhishGuard analyzes a normal GitHub notification:
+Just as important — PhishGuard doesn't flag legitimate emails. Here's a normal GitHub notification:
 
 ```bash
 $ python phishguard.py --email sample_emails/legitimate_example.eml
@@ -525,15 +501,13 @@ $ python phishguard.py --email sample_emails/legitimate_example.eml
   * Verify the sender if the email was unexpected.
 ```
 
-**Score: 0/100. Zero false positives.** The email passed SPF/DKIM authentication, the sender domain matches `github.com` (a trusted domain), there are no urgency or threat keywords, no suspicious attachments, no mismatched links, and the greeting is appropriate. PhishGuard correctly identifies this as clean.
-
-This matters because a tool that flags everything as suspicious is useless. PhishGuard's trusted domain whitelist and multi-check approach ensure that legitimate communications pass through cleanly.
+**Score: 0/100. Zero false positives.** SPF/DKIM passed, sender domain matches `github.com`, no urgency or threat keywords, no suspicious attachments, no mismatched links. PhishGuard correctly identifies this as clean.
 
 ---
 
 ## Walkthrough: Fake Package Delivery Scam
 
-The second sample email simulates a fake DHL package delivery notification — a type of phishing that surged during the post-COVID e-commerce boom.
+The second sample email simulates a fake DHL package delivery notification.
 
 ```bash
 $ python phishguard.py --email sample_emails/phishing_example_2.eml
@@ -572,12 +546,10 @@ $ python phishguard.py --email sample_emails/phishing_example_2.eml
 
 **Key things PhishGuard caught:**
 
-- **Display name spoofing:** The email says it's from "DHL Express Delivery" but the actual address is from `dh1-delivery.com` — note the number `1` instead of the letter `l`. The attacker is impersonating DHL's brand.
-- **A dangerous `.exe` attachment:** The file `DHL_Shipping_Label.exe` is presented as a shipping label, but `.exe` files are executable programs. Opening this would likely install malware (ransomware, a keylogger, or a remote access trojan).
-- **Grammar errors:** The word "informations" (instead of "information") is a common mistake in phishing emails that were written by non-native speakers or generated in bulk.
-- **Failed SPF authentication:** The sending server wasn't authorized to send on behalf of the claimed domain.
-
-This is a well-crafted scam — it uses real DHL branding colours, a plausible tracking number, and a tiny delivery fee ($1.99) to seem legitimate. PhishGuard saw through all of it.
+- **Display name spoofing:** Says "DHL Express Delivery" but the address is `dh1-delivery.com` — number `1` instead of letter `l`.
+- **Dangerous `.exe` attachment:** `DHL_Shipping_Label.exe` is an executable, not a shipping label — opening it would likely install malware.
+- **Grammar errors:** "informations" instead of "information," common in bulk-generated phishing.
+- **Failed SPF:** The sending server wasn't authorized for the claimed domain.
 
 ---
 
@@ -646,49 +618,19 @@ Each finding is independent. They feed into the scoring engine, which adds them 
 
 ### `email_analyzer.py` — Email Phishing Detection
 
-Uses Python's built-in `email` library to parse `.eml` files. Extracts and examines:
-- **Headers:** From, Reply-To, Authentication-Results, Date, Subject
-- **Body:** Text content, HTML content, embedded URLs
-- **Attachments:** Filenames and their extensions
-
-The key insight is that email headers contain a wealth of metadata that reveals how the email was *actually* sent, versus how it *claims* to have been sent:
-
-```
-From: "National Bank Security" <security@nationa1-bank.com>
-                                          ^^^^^^^^^^^^^^^^
-                                          What the victim sees
-
-Reply-To: verify-account@secure-banking-login.com
-                         ^^^^^^^^^^^^^^^^^^^^^^^^
-                         Where replies actually go (attacker's domain)
-
-Authentication-Results: spf=fail; dkim=fail
-                        ^^^^^^^^  ^^^^^^^^
-                        Email is NOT from who it claims to be
-```
+Uses Python's built-in `email` library to parse `.eml` files. Extracts and examines headers (From, Reply-To, Authentication-Results, Date, Subject), body content (text and HTML, plus embedded URLs), and attachments (filenames and extensions). Every embedded URL gets run through the full URL analyzer automatically.
 
 ### `threat_intel.py` — Threat Intelligence
 
-Checks domains against two sources:
-
-1. **Local database** (`data/known_phishing_domains.txt`) — A curated list of 87+ known phishing domains. Works offline, no API key needed.
-2. **URLhaus API** (abuse.ch) — A free, real-time API that tracks malicious URLs used for malware distribution. PhishGuard queries it automatically when internet is available.
-3. **Trusted domain whitelist** (`data/trusted_domains.txt`) — 65+ known legitimate domains. If a URL belongs to a trusted domain, PhishGuard skips the phishing checks and reports it as clean. This prevents false positives on sites like Google, PayPal, or Amazon.
-
-If the internet is unavailable, PhishGuard falls back to the local database silently. The tool always works.
+Checks domains against two sources: a local database (`data/known_phishing_domains.txt`) with 87+ known phishing domains that works offline, and the URLhaus API (abuse.ch) for real-time lookups when internet is available. A trusted domain whitelist (`data/trusted_domains.txt`) with 65+ legitimate domains prevents false positives on sites like Google, PayPal, or Amazon.
 
 ### `scoring.py` — Risk Scoring Engine
 
-Collects findings from all analyzers, sums the risk points (capped at 100), and determines the risk level. Also calculates a **confidence rating** based on the number of findings — more findings mean higher confidence in the assessment.
-
-Generates tailored recommendations based on the risk level. A LOW RISK result gets "verify the sender if unexpected." A CRITICAL result gets "change all passwords immediately" and links to FBI/FTC reporting portals.
+Collects findings from all analyzers, sums the risk points (capped at 100), and determines the risk level. Also calculates a confidence rating based on the number of findings and generates tailored recommendations based on severity.
 
 ### `report_generator.py` — Report Generator
 
-Creates two types of reports:
-
-- **Text reports** — Clean, structured, suitable for logs and terminal output
-- **HTML reports** — Professionally styled with CSS, colour-coded risk scores, a visual progress bar, and expandable finding sections. Can be opened in any browser and shared with colleagues or included in documentation.
+Creates text reports (clean, structured, good for logs) and HTML reports (styled with CSS, colour-coded risk scores, visual progress bar, expandable finding sections). HTML reports open in any browser and can be shared directly.
 
 ---
 
@@ -760,33 +702,9 @@ PhishGuard/
 
 ---
 
-## Sample HTML Reports
-
-PhishGuard generates professional **HTML reports** designed for documentation and sharing. Each report includes:
-
-- A **large, colour-coded risk score** displayed prominently at the top
-- A **visual progress bar** representing the score out of 100
-- **Expandable finding sections** — click on any finding to read the full explanation
-- **Actionable recommendations** tailored to the risk level
-- A **professional disclaimer** footer
-
-Pre-generated sample reports are included in the `sample_reports/` directory. Open them in any browser to see the design.
-
----
-
 ## Skills Demonstrated
 
-This project demonstrates the following cybersecurity and software engineering skills:
-
-| Skill Area | How It's Applied |
-|------------|------------------|
-| **Phishing Analysis** | 22 distinct detection checks covering URL and email phishing techniques |
-| **Threat Intelligence** | Integration with URLhaus API and a curated local threat database |
-| **Email Security** | SPF/DKIM validation, header analysis, sender verification |
-| **Python Development** | Modular architecture, clean code structure, CLI and interactive interfaces |
-| **Security Scoring** | Transparent risk assessment with weighted indicators and confidence ratings |
-| **Report Generation** | Professional HTML and text reports suitable for SOC documentation |
-| **Defensive Security** | Tool designed for detection and education, not offensive use |
+Covers phishing detection (22 checks), threat intelligence integration, email authentication (SPF/DKIM), Python CLI design, and HTML report generation.
 
 ---
 
@@ -800,11 +718,6 @@ This project demonstrates the following cybersecurity and software engineering s
 > - The authors are not responsible for any misuse of this tool
 >
 > **PhishGuard is a DEFENSIVE tool** — it helps you detect and understand phishing, not create it.
->
-> **For safe practice:**
-> - Use the sample emails included in `sample_emails/`
-> - Analyze your own spam/phishing emails (forward suspicious emails to yourself as .eml files)
-> - Use test domains and URLs, not real people's private communications
 
 ---
 
@@ -820,35 +733,20 @@ Contributions are welcome. Here's how:
 
 ### Ideas for Contributions
 
-- Add more typosquatting detection patterns for additional brands
 - Integrate additional threat intelligence feeds (PhishTank, Google Safe Browsing)
 - Add support for `.msg` email format (Microsoft Outlook)
 - Build a web-based interface using Flask or FastAPI
 - Add machine learning-based phishing classification
-- Improve grammar checking with NLP techniques
-- Add email forwarding analysis (Received header chain examination)
-- Build a browser extension that uses PhishGuard's URL analysis
 
 ---
 
 ## Author
 
 **Chioma Iroka**
-
-Computer Science graduate with a focus on cybersecurity. Skilled in network security, vulnerability assessment, and defensive operations. Experienced with threat detection, Nessus Essentials, Wireshark, and building security tools in Python.
+Computer Science Graduate | Cybersecurity Focus
 
 ---
 
 ## License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
-
-<div align="center">
-
-**Built with Python for the cybersecurity community.**
-
-*Phishing is the #1 attack vector — understanding it is your best defence.*
-
-</div>
