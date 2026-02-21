@@ -1,0 +1,32 @@
+From: "GitHub" <noreply@github.com>
+To: developer@example.com
+Subject: [GitHub] Your weekly digest for starred repositories
+Date: Fri, 19 Jan 2024 09:00:00 -0800
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Authentication-Results: mx.example.com; spf=pass; dkim=pass
+Message-ID: <digest-weekly-20240119@github.com>
+
+Hi there,
+
+Here's your weekly digest of activity for repositories you've starred:
+
+python/cpython - 15 new commits this week
+  * bpo-12345: Fix memory leak in asyncio
+  * bpo-67890: Update documentation for dataclasses
+
+django/django - 8 new commits this week
+  * Fixed #34567 - Updated ORM query compilation
+  * Improved test coverage for forms module
+
+requests/requests - 3 new commits this week
+  * Updated urllib3 dependency to 2.1.0
+  * Fixed encoding detection for response content
+
+---
+
+You're receiving this because you're subscribed to your starred repository digest.
+To unsubscribe, visit: https://github.com/settings/notifications
+
+GitHub, Inc. | 88 Colin P. Kelly Jr. Street | San Francisco, CA 94107

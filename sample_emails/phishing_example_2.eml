@@ -1,0 +1,58 @@
+From: "DHL Express Delivery" <noreply@dh1-delivery.com>
+To: recipient@example.com
+Subject: DHL: Package Delivery Failed - Action Required
+Date: Wed, 17 Jan 2024 14:22:00 +0000
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_Part_5678"
+Authentication-Results: mx.example.com; spf=softfail; dkim=none
+Message-ID: <fake-msg-002@dh1-delivery.com>
+
+------=_Part_5678
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<html>
+<body style="font-family: Arial, sans-serif;">
+
+<div style="background: #D40511; color: white; padding: 15px; text-align: center;">
+    <h2>DHL Express</h2>
+</div>
+
+<div style="padding: 20px;">
+
+<p>Dear Customer,</p>
+
+<p>We attempted to deliver your package today but were unable to complete the delivery. Your package is being held at our distribution center.</p>
+
+<p><b>Shipment Details:</b></p>
+<ul>
+    <li>Tracking Number: DHL-8847291056</li>
+    <li>Status: Delivery Failed - Address Verification Required</li>
+    <li>Estimated Weight: 2.3 kg</li>
+</ul>
+
+<p>To reschedule delivery, please confirm your shipping informations and pay the redelivery fee ($1.99) by clicking below:</p>
+
+<p><a href="https://dh1-delivery.com/track/reschedule?id=8847291056">Click Here to Reschedule Delivery</a></p>
+
+<p>Please download the attached shipping label for your records.</p>
+
+<p><b>Important:</b> If you do not confirm within 48 hours, your package will be returned to the sender.</p>
+
+<p>Thank you for choosing DHL Express.</p>
+
+<p>Best regards,<br>
+DHL Customer Service</p>
+
+</div>
+</body>
+</html>
+
+------=_Part_5678
+Content-Type: application/octet-stream; name="DHL_Shipping_Label.exe"
+Content-Disposition: attachment; filename="DHL_Shipping_Label.exe"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBhIGZha2UgYXR0YWNobWVudCBmb3IgdGVzdGluZyBwdXJwb3NlcyBvbmx5Lg==
+
+------=_Part_5678--

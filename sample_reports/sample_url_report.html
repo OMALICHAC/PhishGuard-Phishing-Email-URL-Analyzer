@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard Analysis Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                         'Helvetica Neue', Arial, sans-serif;
+            background: #f5f6fa;
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .report-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .report-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .report-header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .report-header .subtitle {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            background: #ecf0f1;
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .score-section {
+            text-align: center;
+            padding: 40px 30px;
+            background: #fdedec;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: #e74c3c;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .risk-level {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .risk-description {
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .score-bar-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: #ddd;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            width: 70%;
+            background: linear-gradient(90deg, #c0392b, #e74c3c);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .confidence {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .target-section {
+            padding: 20px 30px;
+            background: #fafafa;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .target-section strong {
+            color: #2c3e50;
+        }
+
+        .target-url {
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 5px;
+            display: block;
+            font-size: 13px;
+        }
+
+        .findings-section {
+            padding: 30px;
+        }
+
+        .findings-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e74c3c;
+        }
+
+        .finding {
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .finding summary {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fafafa;
+            transition: background 0.2s;
+        }
+
+        .finding summary:hover {
+            background: #f0f0f0;
+        }
+
+        .finding-number {
+            background: #e74c3c;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .finding-title {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .finding-points {
+            background: #fdedec;
+            color: #e74c3c;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .finding-details {
+            padding: 15px 15px 15px 53px;
+            border-top: 1px solid #eee;
+        }
+
+        .finding-explanation {
+            margin-top: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-left: 3px solid #e74c3c;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .finding-explanation p {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .recommendations-section {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .recommendations-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .recommendations-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations-section li {
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #e74c3c;
+            font-size: 14px;
+        }
+
+        .no-findings {
+            text-align: center;
+            padding: 30px;
+            color: #27ae60;
+            font-size: 16px;
+        }
+
+        .report-footer {
+            text-align: center;
+            padding: 20px;
+            background: #2c3e50;
+            color: #95a5a6;
+            font-size: 12px;
+        }
+
+        .report-footer .disclaimer {
+            max-width: 600px;
+            margin: 10px auto 0;
+            font-size: 11px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>PHISHGUARD</h1>
+            <div class="subtitle">Phishing Detection Analysis Report</div>
+        </div>
+
+        <div class="report-meta">
+            <span>Generated: 2026-02-21 10:37:08</span>
+            <span>Version: v1.0.0</span>
+            <span>Type: URL Analysis</span>
+        </div>
+
+        <div class="target-section">
+            <strong>Target Analyzed:</strong>
+            <span class="target-url">http://paypa1.com/login/verify-account/secure/update?user=victim</span>
+        </div>
+
+        <div class="score-section">
+            <div class="score-circle">
+                <div class="score-number">70</div>
+                <div class="score-label">/ 100</div>
+            </div>
+            <div class="risk-level">🔴 VERY HIGH</div>
+            <div class="risk-description">Strong phishing indicators, likely malicious</div>
+            <div class="score-bar-container">
+                <div class="score-bar-fill"></div>
+            </div>
+            <div class="confidence">
+                Confidence: High (80%)
+                | 4 indicator(s) detected
+            </div>
+        </div>
+
+        <div class="findings-section">
+            <h2>Detailed Findings</h2>
+            
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#1</span>
+                    <span class="finding-title">Domain may be impersonating 'paypal' (paypal.com)</span>
+                    <span class="finding-points">+20 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Typosquatting</p>
+                    <p><strong>Risk Points:</strong> +20</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>TYPOSQUATTING DETECTED: The domain 'paypa1.com' looks suspiciously similar to the legitimate brand 'paypal' (paypal.com). Typosquatting uses small character changes (like replacing 'l' with '1' or 'o' with '0') to create fake domains that look real. Always type important URLs directly into your browser.</p>
+                    </div>
+                </div>
+            </details>
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#2</span>
+                    <span class="finding-title">URL does not use HTTPS (encrypted connection)</span>
+                    <span class="finding-points">+10 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Missing HTTPS</p>
+                    <p><strong>Risk Points:</strong> +10</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>This URL uses plain HTTP instead of HTTPS. HTTPS encrypts the connection between your browser and the website, protecting your data from interception. Legitimate websites that handle sensitive information (logins, payments) almost always use HTTPS. Never enter credentials on an HTTP-only website.</p>
+                    </div>
+                </div>
+            </details>
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#3</span>
+                    <span class="finding-title">URL path contains suspicious keywords: 'login', 'verify', 'secure', 'update', 'account'</span>
+                    <span class="finding-points">+10 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Suspicious Keywords</p>
+                    <p><strong>Risk Points:</strong> +10</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>Phishing URLs often include keywords related to security, authentication, or account management to create urgency. Suspicious keywords detected in the URL path: 'login', 'verify', 'secure', 'update', 'account'. These words are commonly used in phishing to trick users into entering their credentials or personal information.</p>
+                    </div>
+                </div>
+            </details>
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#4</span>
+                    <span class="finding-title">Domain/URL flagged as KNOWN MALICIOUS</span>
+                    <span class="finding-points">+30 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Threat Intelligence</p>
+                    <p><strong>Risk Points:</strong> +30</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>THREAT INTELLIGENCE ALERT: Domain 'paypa1.com' is listed in the local phishing database. This domain or URL has been reported and confirmed as malicious by threat intelligence sources. DO NOT visit this URL or enter any information. Report it to your security team.</p>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="recommendations-section">
+            <h2>Recommendations</h2>
+            <ul>
+                <li>DO NOT interact with this email/URL in any way.</li>
+<li>Report this immediately to your IT/Security team.</li>
+<li>If you entered credentials, change ALL passwords immediately.</li>
+<li>Enable multi-factor authentication on all your accounts.</li>
+<li>Monitor your accounts for unauthorized activity.</li>
+<li>Consider reporting to: https://www.ic3.gov (FBI) or https://reportfraud.ftc.gov (FTC)</li>
+<li>The domain appears to impersonate a legitimate website. Always type URLs directly into your browser.</li>
+<li>This domain/URL has been flagged by threat intelligence sources as known malicious.</li>
+
+            </ul>
+        </div>
+
+        <div class="report-footer">
+            <div>Analyzed by PhishGuard v1.0.0</div>
+            <div class="disclaimer">
+                DISCLAIMER: This analysis is automated and should be used as one
+                input in your security assessment. No automated tool can guarantee
+                100% accuracy. When in doubt, consult your IT/Security team.
+                This tool is for educational purposes and authorized security
+                analysis only.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+# Trusted Domains - Known Legitimate Organizations
+# These domains are considered safe and reduce risk scores
+# Format: one domain per line (without http/https prefix)
+
+# === Major Tech Companies ===
+google.com
+gmail.com
+youtube.com
+microsoft.com
+outlook.com
+live.com
+apple.com
+icloud.com
+amazon.com
+aws.amazon.com
+facebook.com
+instagram.com
+twitter.com
+x.com
+linkedin.com
+github.com
+stackoverflow.com
+mozilla.org
+firefox.com
+
+# === Major Email Providers ===
+yahoo.com
+aol.com
+protonmail.com
+zoho.com
+fastmail.com
+tutanota.com
+mail.com
+
+# === Banks & Financial ===
+chase.com
+bankofamerica.com
+wellsfargo.com
+citibank.com
+usbank.com
+capitalone.com
+discover.com
+americanexpress.com
+paypal.com
+venmo.com
+stripe.com
+square.com
+
+# === Shopping ===
+ebay.com
+walmart.com
+target.com
+bestbuy.com
+etsy.com
+shopify.com
+
+# === Government ===
+gov
+.gov.uk
+.gc.ca
+.gov.au
+
+# === Cloud Services ===
+dropbox.com
+box.com
+onedrive.com
+drive.google.com
+slack.com
+zoom.us
+teams.microsoft.com
+
+# === Security Companies ===
+norton.com
+mcafee.com
+kaspersky.com
+malwarebytes.com
+avast.com
+bitdefender.com
+
+# === Shipping ===
+ups.com
+fedex.com
+usps.com
+dhl.com

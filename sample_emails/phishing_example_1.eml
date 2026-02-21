@@ -1,0 +1,39 @@
+From: "National Bank Security" <security-alert@nationa1-bank.com>
+To: customer@example.com
+Reply-To: verify-account@secure-banking-login.com
+Subject: URGENT: Your Account Will Be Suspended in 24 Hours!
+Date: Mon, 15 Jan 2024 08:30:00 -0500
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_Part_1234"
+Authentication-Results: mx.example.com; spf=fail; dkim=fail
+Message-ID: <fake-msg-001@nationa1-bank.com>
+
+------=_Part_1234
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<html>
+<body>
+<p>Dear Valued Customer,</p>
+
+<p>We have detected <b>unauthorized access</b> to your bank account. Your account will be suspended within 24 hours unless you verify your identity immediately.</p>
+
+<p><b>URGENT: Act now to prevent account closure!</b></p>
+
+<p>Please click the link below to verify your account and restore access:</p>
+
+<p><a href="http://192.168.45.67/login/verify-account">https://www.nationalbank.com/secure/verify</a></p>
+
+<p>If you do not verify your account immediately, we will be forced to permanently disable your access and take legal action.</p>
+
+<p>Your security is our priority.</p>
+
+<p>Sincerely,<br>
+National Bank Security Team<br>
+Customer Protection Department</p>
+
+<p><small>This is an automated security alert. Do not reply to this email.</small></p>
+</body>
+</html>
+
+------=_Part_1234--

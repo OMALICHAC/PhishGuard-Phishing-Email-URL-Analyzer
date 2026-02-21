@@ -1,0 +1,111 @@
+# Known Phishing Domains Database
+# Source: Aggregated from public threat intelligence feeds
+# (PhishTank, OpenPhish, abuse.ch, and community reports)
+# Last updated: 2024-01-01
+#
+# Format: one domain per line
+# NOTE: This is a sample dataset for demonstration purposes.
+# In production, this should be regularly updated from live feeds.
+
+# === Typosquatting Domains (Impersonating Real Brands) ===
+paypa1.com
+paypal-secure.com
+paypal-verify.net
+paypal-login.org
+pay-pal.com
+g00gle.com
+gooogle.com
+googie.com
+google-verify.com
+google-security.net
+amaz0n.com
+amazon-verify.com
+amazon-security.net
+amazonsecure.com
+faceb00k.com
+facebook-login.net
+facebook-security.com
+micr0soft.com
+microsoft-verify.com
+microsoft-security.net
+microsoftonline-login.com
+app1e.com
+apple-verify.com
+apple-id-secure.com
+apple-security.net
+netf1ix.com
+netflix-verify.com
+netflix-secure.net
+linkedln.com
+linkedin-verify.com
+twltter.com
+twitter-verify.com
+dropb0x.com
+dropbox-verify.com
+
+# === Fake Banking Domains ===
+chase-verify.com
+chase-secure.net
+bankofamerica-verify.com
+wellsfargo-secure.com
+citibank-verify.net
+secure-banking-login.com
+online-banking-verify.com
+account-verify-secure.com
+banking-security-alert.com
+secure-bank-update.com
+
+# === Fake Shipping Domains ===
+dh1-delivery.com
+dhl-tracking-update.com
+ups-delivery-notice.com
+fedex-tracking-update.com
+usps-delivery-alert.com
+package-delivery-notice.com
+tracking-update-delivery.com
+
+# === Fake Tech Support Domains ===
+windows-support-alert.com
+apple-support-verify.com
+google-account-alert.com
+microsoft-support-alert.com
+tech-support-helpdesk.com
+
+# === Credential Harvesting Domains ===
+secure-login-verify.com
+account-verification.net
+email-verify-account.com
+webmail-login-secure.com
+cloud-storage-verify.com
+document-share-secure.com
+file-share-verify.com
+
+# === Fake Prize/Lottery Domains ===
+prize-winner-claim.com
+lottery-winner-verify.com
+reward-claim-center.com
+free-gift-claim.com
+
+# === Generic Phishing Domains ===
+secure-update-required.com
+verify-account-now.com
+urgent-security-update.com
+important-notification.net
+action-required-now.com
+confirm-identity-secure.com
+update-billing-info.com
+renew-subscription-now.com
+password-reset-verify.com
+unlock-account-secure.com
+
+# === Recently Reported (Sample) ===
+login-secure-verify.xyz
+account-update.buzz
+security-alert.click
+verify-now.top
+urgent-action.site
+secure-portal.online
+account-recovery.info
+billing-update.club
+subscription-renew.store
+password-verify.tech

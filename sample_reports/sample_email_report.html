@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard Analysis Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                         'Helvetica Neue', Arial, sans-serif;
+            background: #f5f6fa;
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .report-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .report-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .report-header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .report-header .subtitle {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            background: #ecf0f1;
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .score-section {
+            text-align: center;
+            padding: 40px 30px;
+            background: #f4ecf7;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: #8e44ad;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .risk-level {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8e44ad;
+            margin-bottom: 10px;
+        }
+
+        .risk-description {
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .score-bar-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: #ddd;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #9b59b6, #8e44ad);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .confidence {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .target-section {
+            padding: 20px 30px;
+            background: #fafafa;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .target-section strong {
+            color: #2c3e50;
+        }
+
+        .target-url {
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 5px;
+            display: block;
+            font-size: 13px;
+        }
+
+        .findings-section {
+            padding: 30px;
+        }
+
+        .findings-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #8e44ad;
+        }
+
+        .finding {
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .finding summary {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fafafa;
+            transition: background 0.2s;
+        }
+
+        .finding summary:hover {
+            background: #f0f0f0;
+        }
+
+        .finding-number {
+            background: #8e44ad;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .finding-title {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .finding-points {
+            background: #f4ecf7;
+            color: #8e44ad;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .finding-details {
+            padding: 15px 15px 15px 53px;
+            border-top: 1px solid #eee;
+        }
+
+        .finding-explanation {
+            margin-top: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-left: 3px solid #8e44ad;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .finding-explanation p {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .recommendations-section {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .recommendations-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .recommendations-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations-section li {
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #8e44ad;
+            font-size: 14px;
+        }
+
+        .no-findings {
+            text-align: center;
+            padding: 30px;
+            color: #27ae60;
+            font-size: 16px;
+        }
+
+        .report-footer {
+            text-align: center;
+            padding: 20px;
+            background: #2c3e50;
+            color: #95a5a6;
+            font-size: 12px;
+        }
+
+        .report-footer .disclaimer {
+            max-width: 600px;
+            margin: 10px auto 0;
+            font-size: 11px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>PHISHGUARD</h1>
+            <div class="subtitle">Phishing Detection Analysis Report</div>
+        </div>
+
+        <div class="report-meta">
+            <span>Generated: 2026-02-21 10:36:50</span>
+            <span>Version: v1.0.0</span>
+            <span>Type: EMAIL Analysis</span>
+        </div>
+
+        <div class="target-section">
+            <strong>Target Analyzed:</strong>
+            <span class="target-url">phishing_example_1.eml</span>
+        </div>
+
+        <div class="score-section">
+            <div class="score-circle">
+                <div class="score-number">100</div>
+                <div class="score-label">/ 100</div>
+            </div>
+            <div class="risk-level">🚨 CRITICAL</div>
+            <div class="risk-description">Almost certainly a phishing attempt</div>
+            <div class="score-bar-container">
+                <div class="score-bar-fill"></div>
+            </div>
+            <div class="confidence">
+                Confidence: Very High (95%)
+                | 8 indicator(s) detected
+            </div>
+        </div>
+
+        <div class="findings-section">
+            <h2>Detailed Findings</h2>
+            
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#1</span>
+                    <span class="finding-title">From domain (nationa1-bank.com) differs from Reply-To domain (secure-banking-login.com)</span>
+                    <span class="finding-points">+25 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Sender Mismatch</p>
+                    <p><strong>Risk Points:</strong> +25</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>SENDER MISMATCH: The email claims to be from 'security-alert@nationa1-bank.com' but replies would go to 'verify-account@secure-banking-login.com' — a completely different domain! In phishing attacks, the 'From' address is spoofed to look legitimate, while the 'Reply-To' address is the attacker's real email. This is a strong phishing indicator.</p>
+                    </div>
+                </div>
+            </details>
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#2</span>
+                    <span class="finding-title">Email contains urgency keywords: 'urgent', 'immediately', 'act now', 'within 24 hours', 'suspended'</span>
+                    <span class="finding-points">+10 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Urgency Language</p>
+                    <p><strong>Risk Points:</strong> +10</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>Phishing emails use urgency language to pressure you into acting quickly without thinking critically. Words like 'urgent', 'immediately', 'act now', 'within 24 hours', 'suspended' are designed to create panic and bypass your natural skepticism. Legitimate organizations rarely demand immediate action via email.</p>
+                    </div>
+                </div>
+            </details>
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#3</span>
+                    <span class="finding-title">Email contains threatening language: 'unauthorized access', 'security alert', 'legal action', 'will be suspended'</span>
+                    <span class="finding-points">+10 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Threat Language</p>
+                    <p><strong>Risk Points:</strong> +10</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>This email uses threatening language to pressure you: 'unauthorized access', 'security alert', 'legal action', 'will be suspended'. Phishing emails commonly threaten account closure, legal action, or other negative consequences to scare victims into clicking links or providing information. Legitimate organizations typically don't threaten customers via email.</p>
+                    </div>
+                </div>
+            </details>
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#4</span>
+                    <span class="finding-title">Email contains suspicious URL (score: 45): http://192.168.45.67/login/verify-account...</span>
+                    <span class="finding-points">+15 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Suspicious Link</p>
+                    <p><strong>Risk Points:</strong> +15</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>A link in this email was analyzed and scored 45/100 for phishing risk: http://192.168.45.67/login/verify-account — This URL has multiple phishing indicators. Do NOT click links in suspicious emails. Instead, navigate to the website directly by typing the URL.</p>
+                    </div>
+                </div>
+            </details>
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#5</span>
+                    <span class="finding-title">SPF authentication FAILED — sender may be spoofed</span>
+                    <span class="finding-points">+20 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Email Authentication</p>
+                    <p><strong>Risk Points:</strong> +20</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>SPF (Sender Policy Framework) authentication FAILED for this email. SPF verifies that the sending server is authorized to send email on behalf of the claimed domain. A FAIL result means the email was likely sent from an unauthorized server — a strong indicator of email spoofing (faking the sender address).</p>
+                    </div>
+                </div>
+            </details>
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#6</span>
+                    <span class="finding-title">DKIM authentication FAILED — email may be tampered</span>
+                    <span class="finding-points">+20 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Email Authentication</p>
+                    <p><strong>Risk Points:</strong> +20</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>DKIM (DomainKeys Identified Mail) authentication FAILED. DKIM uses digital signatures to verify the email hasn't been altered in transit and really comes from the claimed domain. A FAIL result means the email's signature is invalid — it may have been modified or the sender is forging the domain.</p>
+                    </div>
+                </div>
+            </details>
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#7</span>
+                    <span class="finding-title">Email uses generic greeting: 'dear valued customer'</span>
+                    <span class="finding-points">+5 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Generic Greeting</p>
+                    <p><strong>Risk Points:</strong> +5</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>This email uses the generic greeting 'dear valued customer' instead of addressing you by name. Phishing emails are sent to thousands of people, so they use generic greetings. Legitimate organizations that have your account typically address you by your real name.</p>
+                    </div>
+                </div>
+            </details>
+            <details class="finding">
+                <summary>
+                    <span class="finding-number">#8</span>
+                    <span class="finding-title">Link text shows 'www.nationalbank.com' but actually goes to '192.168.45.67'</span>
+                    <span class="finding-points">+25 pts</span>
+                </summary>
+                <div class="finding-details">
+                    <p><strong>Category:</strong> Mismatched Link</p>
+                    <p><strong>Risk Points:</strong> +25</p>
+                    <div class="finding-explanation">
+                        <strong>Why this is suspicious:</strong>
+                        <p>LINK MISMATCH: The email displays the link as going to 'www.nationalbank.com', but clicking it would actually take you to '192.168.45.67'. This is one of the most common and effective phishing techniques — the displayed text is designed to make you think you're clicking a safe link while the real destination is malicious.</p>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="recommendations-section">
+            <h2>Recommendations</h2>
+            <ul>
+                <li>DO NOT interact with this email/URL in any way.</li>
+<li>Report this immediately to your IT/Security team.</li>
+<li>If you entered credentials, change ALL passwords immediately.</li>
+<li>Enable multi-factor authentication on all your accounts.</li>
+<li>Monitor your accounts for unauthorized activity.</li>
+<li>Consider reporting to: https://www.ic3.gov (FBI) or https://reportfraud.ftc.gov (FTC)</li>
+
+            </ul>
+        </div>
+
+        <div class="report-footer">
+            <div>Analyzed by PhishGuard v1.0.0</div>
+            <div class="disclaimer">
+                DISCLAIMER: This analysis is automated and should be used as one
+                input in your security assessment. No automated tool can guarantee
+                100% accuracy. When in doubt, consult your IT/Security team.
+                This tool is for educational purposes and authorized security
+                analysis only.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

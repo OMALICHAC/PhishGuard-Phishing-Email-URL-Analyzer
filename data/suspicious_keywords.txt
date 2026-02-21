@@ -1,0 +1,91 @@
+# Suspicious Keywords Found in Phishing Emails and URLs
+# Each line contains one keyword or phrase (case-insensitive matching)
+# Categories: Urgency, Threats, Financial, Credentials, Action Words
+
+# === Urgency Keywords ===
+urgent
+immediately
+act now
+right away
+expires today
+limited time
+time sensitive
+within 24 hours
+within 48 hours
+don't delay
+hurry
+last chance
+final warning
+final notice
+expire
+expiring
+suspended
+suspension
+
+# === Threat Keywords ===
+account closed
+account suspended
+account terminated
+unauthorized access
+unauthorized transaction
+security alert
+security warning
+legal action
+law enforcement
+police report
+court order
+penalty
+fine
+locked out
+permanently disabled
+
+# === Financial Keywords ===
+wire transfer
+bank transfer
+send money
+bitcoin
+cryptocurrency
+gift card
+western union
+moneygram
+payment declined
+payment failed
+refund
+prize
+lottery
+winner
+inheritance
+million dollars
+cash prize
+
+# === Credential Harvesting Keywords ===
+verify your account
+confirm your identity
+update your information
+update payment
+reset your password
+confirm your password
+validate your account
+verify your identity
+social security
+ssn
+credit card number
+bank account number
+routing number
+pin number
+
+# === Action Keywords (Pressure) ===
+click here
+click below
+click immediately
+download attachment
+open attachment
+enable macros
+enable content
+sign in now
+log in now
+verify now
+confirm now
+update now
+respond immediately
+reply urgent
